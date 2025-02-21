@@ -11,6 +11,7 @@ custom_components/
 └── squashlevels/
     ├── __init__.py
     └── sensor.py
+    └── manifest.json
 ```
 
 2. Add the following configuration to your `configuration.yaml` file:
