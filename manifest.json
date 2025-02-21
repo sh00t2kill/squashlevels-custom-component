@@ -1,0 +1,12 @@
+{
+    "domain": "squashlevels",
+    "name": "Unauthenticated API for Squash Levels",
+    "codeowners": ["@sh00t2kill"],
+    "config_flow": false,
+    "dependencies": [],
+    "documentation": "https://github.com/sh00t2kill/squashlevels-custom-component",
+    "iot_class": "cloud_poll",
+    "issue_tracker": "https://github.com/sh00t2kill/squashlevels-custom-component",
+    "requirements": [],
+    "version": "0.1.0"
+  }
