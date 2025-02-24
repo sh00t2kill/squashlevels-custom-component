@@ -26,6 +26,7 @@ last12m
 last24m
 last5y
 last10y
+all (this is the default)
 ```
 
 ```yaml
