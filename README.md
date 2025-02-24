@@ -52,6 +52,9 @@ The integration creates the following sensors:
 - `sensor.<player_name>_squashlevels_last_match_date`: Date of the last match.
 - `sensor.<player_name>_squashlevels_last_points_scores`: Points scores of the last match.
 - `sensor.<player_name>_squashlevels_last_games_score`: Games score of the last match.
+
+If you are logged in, these additional sensors are created:
+
 - `sensor.<player_name>_squashlevels_matches`: Total matches found for the configured show period
 - `sensor.<player_name>_squashlevels_matches_won`: Matches Won
 - `sensor.<player_name>_squashlevels_matches_lost`: Matches Lost
