@@ -95,6 +95,11 @@ async def fetch_player_data(session, player_id, show="all"):
     async with session.get(API_URL) as response:
         return await response.json()
 
+async def fetch_squashlevels_data(session, player_id, show, username=None, password=None):
+    if username and password:
+        await login(session, username, password)
+    return await fetch_player_data(session, player_id, show)
+
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     player_id = config.get(CONF_PLAYER_ID)
     username = config.get(CONF_USERNAME)
@@ -104,10 +109,10 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     _LOGGER.debug(f"Using show setting of {show}")
 
     async with aiohttp.ClientSession() as session:
-        if username and password:
-            await login(session, username, password)
-        
-        data = await fetch_player_data(session, player_id)
+        #if username and password:
+        #    await login(session, username, password)
+        data = await fetch_squashlevels_data(session, player_id, show, username, password)
+        #data = await fetch_player_data(session, player_id)
         sensors = [
             SquashLevelSensor(data, "level_now", "level", "mdi:racquetball"),
             SquashLevelSensor(data, "damped_level", "level", "mdi:racquetball"),
@@ -126,7 +131,9 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         async_add_entities(sensors, True)
 
         async def update_data(_):
-            new_data = await fetch_player_data(session, player_id, show)
+            async with aiohttp.ClientSession() as session:
+                new_data = await fetch_squashlevels_data(session, player_id, show, username, password)
+
             for sensor in sensors:
                 sensor.update_data(new_data)
                 sensor.async_schedule_update_ha_state(True)
