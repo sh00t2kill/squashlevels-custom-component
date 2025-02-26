@@ -13,6 +13,8 @@ CONF_PLAYER_ID = "player_id"
 CONF_USERNAME = "username"
 CONF_PASSWORD = "password"
 SCAN_INTERVAL = timedelta(hours=1)
+DEFAULT_ICON = "mdi:racquetball"
+DEFAULT_UNIT = "level"
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_PLAYER_ID): cv.positive_int,
@@ -21,7 +23,18 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional("show", default="all"): cv.string
 })
 
-STATS_SENSORS = ['matches', 'matches_won', 'matches_lost']
+STATS_SENSORS = [
+    'matches',
+    'matches_won',
+    'matches_lost',
+    'overall_level_change',
+    'level_change_last_12m',
+    'level_change_this_season',
+    'level_change_last_match',
+    'trend',
+    'average_level_last4',
+    'average_level_played_at_last4',
+    ]
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -114,20 +127,29 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         data = await fetch_squashlevels_data(session, player_id, show, username, password)
         #data = await fetch_player_data(session, player_id)
         sensors = [
-            SquashLevelSensor(data, "level_now", "level", "mdi:racquetball"),
-            SquashLevelSensor(data, "damped_level", "level", "mdi:racquetball"),
+            SquashLevelSensor(data, "level_now", "level", DEFAULT_ICON),
+            SquashLevelSensor(data, "damped_level", "level", DEFAULT_ICON),
             SquashLevelSensor(data, "last_match_date", "date", "mdi:calendar"),
-            SquashLevelSensor(data, "points_scores", "score", "mdi:racquetball"),
-            SquashLevelSensor(data, "games_score", "score", "mdi:racquetball"),
+            SquashLevelSensor(data, "points_scores", "score", DEFAULT_ICON),
+            SquashLevelSensor(data, "games_score", "score", DEFAULT_ICON),
+            SquashLevelSensor(data, "club_name", "club", DEFAULT_ICON),
+            SquashLevelSensor(data, "grade_text", "grade", DEFAULT_ICON),
         ]
 
         status = data['status']
         _LOGGER.info(f"API Status: {status}")
         if status == "good":
             # we are logged in, add extra sensors
-            sensors.append(SquashLevelSensor(data, "matches", "integer", "mdi:racquetball"))
-            sensors.append(SquashLevelSensor(data, "matches_won", "integer", "mdi:racquetball"))
-            sensors.append(SquashLevelSensor(data, "matches_lost", "integer", "mdi:racquetball"))
+            sensors.append(SquashLevelSensor(data, "matches", "integer", DEFAULT_ICON))
+            sensors.append(SquashLevelSensor(data, "matches_won", "integer", DEFAULT_ICON))
+            sensors.append(SquashLevelSensor(data, "matches_lost", "integer", DEFAULT_ICON))
+            sensors.append(SquashLevelSensor(data, "overall_level_change", DEFAULT_UNIT, DEFAULT_ICON))
+            sensors.append(SquashLevelSensor(data, "level_change_last_12m", DEFAULT_UNIT, DEFAULT_ICON))
+            sensors.append(SquashLevelSensor(data, "level_change_this_season", DEFAULT_UNIT, DEFAULT_ICON))
+            sensors.append(SquashLevelSensor(data, "level_change_last_match", DEFAULT_UNIT, DEFAULT_ICON))
+            sensors.append(SquashLevelSensor(data, "trend", "integer", DEFAULT_ICON))
+            sensors.append(SquashLevelSensor(data, "average_level_last4", DEFAULT_UNIT, DEFAULT_ICON))
+            sensors.append(SquashLevelSensor(data, "average_level_played_at_last4", DEFAULT_UNIT, DEFAULT_ICON))
         async_add_entities(sensors, True)
 
         async def update_data(_):
